@@ -1,5 +1,4 @@
-FROM node:dubnium-stretch-slim
-
+FROM node:20-slim
 WORKDIR /home/app
 
 RUN apt update \
