@@ -1,22 +1,18 @@
-FROM node:20-slim
+FROM node:18-slim
+
 WORKDIR /home/app
 
-RUN apt update \
-    && apt install -y curl ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
+# Install system dependencies (curl, ffmpeg, youtube-dl, python3, build tools)
+RUN apt-get update \
+ && apt-get install -y curl ffmpeg youtube-dl python3 make g++ \
+ && ln -sf /usr/bin/python3 /usr/bin/python \
+ && rm -rf /var/lib/apt/lists/*
 
-# This is on a separate line because youtube-dl needs to be frequently updated
-RUN apt update \
-    && apt install -y youtube-dl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Only install node_modules if the package.json changes
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . ./
-RUN mkdir -p public/temp \
-    && npm run build
+RUN mkdir -p public/temp && npm run build
 
-EXPOSE 3000
-CMD [ "npm", "start" ]
+EXPOSE 8080
+CMD ["npm", "start"]
